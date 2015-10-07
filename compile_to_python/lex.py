@@ -1,11 +1,14 @@
 import nodes
+import string
 
+ascii_letters = string.ascii_letters
 
 # def make_nested_arrays(string, output=None):
 #     if output is None:      # on first function in stack
 #         output = []
 #     ## use regex to tokenize
 #     return output
+
 
 def tokenize(cls, string, output=None):
     """takes input string, returns list of tokens"""
@@ -18,8 +21,9 @@ def tokenize(cls, string, output=None):
 
     token = ""
     types = {("(", ")"): 0,
-             cls(0).operators: 0,
-             ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"): 0}
+             cls.get_operators(): 0,
+             ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"): 0,
+             tuple(ascii_letters): 0}
 
     while True:
         # base case 1
