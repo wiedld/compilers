@@ -1,5 +1,7 @@
 import utils
 import string
+import re
+
 
 ascii_letters = string.ascii_letters
 
@@ -11,7 +13,7 @@ class AbstractParsedNode(object):
     operators = {}  # key=operator, value=function_name
     valid_ascii = []    # enter valid ascii alphanumeric
 
-    def __init__(self, data, left=None, right=None):
+    def __init__(self, data=None, left=None, right=None):
         self.data = data
         self.left = left
         self.right = right
@@ -57,17 +59,41 @@ class CalculatorNode(AbstractParsedNode):
 
     @classmethod
     def token_patterns(cls):
-        regex_expns = [('^(\(*([0-9]*)(\%s)([0-9]*)\)*)' % op) for op in cls.operators.keys()]
+        regex_expns = [('^(([0-9]*)(\%s)([0-9]*))' % op) for op in cls.operators.keys()]
         return tuple(regex_expns)
 
 
     @classmethod
-    def parse_tree(tokens_list):
-        pass
+    def parse_tree(cls, tokens_list):
+        root = cls()
+        root.recursive_parse(tokens_list)
+
+    # def recursive_parse(self, tokens_list):
+    #     # base case = if no more tokens
+    #     if tokens_list == []:
+    #         return
+
+    #     # for each token, make operator=parent and left/right children
+    #     statement = self.data[0]
+    #     # if a left child + parent operator
+    #     if re.match('^\(*[0-9]+[\+\-\/\*\%\^\!\e]{1}$', statement):
+    #         left_data = re.match('^[0-9]*', statement).group(0)
+    #         self.left = CalculatorNode(left_data)
+    #         self.data = re.match('[\+\-\/\*\%\^\!\e]{1}', statement).group(0)
+    #     # if a parent + right child, or left + parent + right
+    #     data = re.match('[\+\-\/\*\%\^\!\e]{1}', statement).group(0)
+    #     self.data = CalculatorNode(data)
+    #     # if a right child -- then it's off the next root
 
 
-    def recursive_parse(self):
-        pass
+    #     # recursive call to the right (lopsided tree?)
+
+    #     if re.match('[\+\-\/\*\%\^\!\e]{1}[0-9]*', statement):
+
+
+
+
+
 
 
     def bind(self):
