@@ -19,7 +19,7 @@
 ###########################
 # TODO:
 # - handle spaces in input.
-# - invalid characters
+# "**": utils.power screws up regex
 ###########################
 
 import lex
@@ -27,12 +27,17 @@ import parser
 
 
 def calculator():
-    raw = raw_input("> ")
-    tokens = lex.lexical_analysis(raw, parser.CalculatorNode)
-    print tokens
+    while True:
+        raw = raw_input("> ")
 
-    # root = CalculatorNode(tokens_list)
-    # parse(root)
+        if raw == "q":
+            break
+
+        tokens = lex.lexical_analysis(raw, parser.CalculatorNode)
+        print tokens
+
+        # root = CalculatorNode(tokens_list)
+        # parse(root)
 
 
 if __name__ == "__main__":

@@ -28,10 +28,3 @@ def tokenize(cls, string):
 def lexical_analysis(raw, cls):
     tokens = tokenize(cls, raw)
     return tokens
-
-    # nested_statements = make_nested_arrays(raw)
-    # print nested_statements
-
-    # tokens_list = [lexical.tokenize(CalculatorNode, statement) for statement in nested_statements]
-    # print tokens_list
-    # return tokens_list

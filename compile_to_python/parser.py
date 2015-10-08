@@ -4,10 +4,10 @@ import string
 ascii_letters = string.ascii_letters
 
 
-##############################
-# classes for each parse tree
+###################################################
+# Abstract class for python "compiled" languages
 
-class ParsedTreeNode(object):
+class AbstractParsedNode(object):
     operators = {}  # key=operator, value=function_name
     valid_ascii = []    # enter valid ascii alphanumeric
 
@@ -15,11 +15,6 @@ class ParsedTreeNode(object):
         self.data = data
         self.left = left
         self.right = right
-
-    @classmethod
-    def get_ascii(cls):
-        """return tuple (hashable type) containing valid ascii"""
-        return tuple(cls.valid_ascii)
 
     @classmethod
     def get_operators(cls):
@@ -31,12 +26,20 @@ class ParsedTreeNode(object):
         """return tuple containing valid regex expressions."""
         return None
 
+    @classmethod
+    def parse_tree(cls, tokens_list):
+        """take list of tokens, and return root of parsed tree."""
+        return None
+
     def bind(self):
-        """bind the opcode (python = opcode here) to the operator"""
+        """bind the opcode function (python = opcode here) to the operator"""
         return None
 
 
-class CalculatorNode(ParsedTreeNode):
+###################################################
+# calculator language
+
+class CalculatorNode(AbstractParsedNode):
     operators = {"+": utils.add,
                  "-": utils.subtract,
                  "/": utils.division,
@@ -48,42 +51,30 @@ class CalculatorNode(ParsedTreeNode):
                  # "**": utils.power
                  }
 
-    valid_ascii = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
-
     @classmethod
     def get_operators(cls):
         return tuple(cls.operators.keys())
 
+
     @classmethod
     def token_patterns(cls):
-        """return tuple containing valid regex expressions."""
         regex_expns = [('^(\(*([0-9]*)(\%s)([0-9]*)\)*)' % op) for op in cls.operators.keys()]
 
         return tuple(regex_expns)
 
+
+    @classmethod
+    def parse_tree(tokens_list):
+        pass
+
+
+    def recursive_parse(self):
+        pass
+
+
     def bind(self):
-        if self.data in self.operators:
-            self.data = None
-
-
-##############################
-# parsing function
-
-def parse(node):
-
-    if len(node.data) <= 1:
-        return
-
-    # # find the next "(", and the last ")"
-    # paran_start = tokens_list.index("(")
-    # paran_end = (len(tokens_list) - 1) - tokens_list[::-1].index(")")
-
-    node.left = CalculatorNode(node.data[:paran_start])
-    node.right = CalculatorNode(node.data[paran_start:])
-
-    # recursive call
-    parse(node.left)
-    parse(node.right)
+            if self.data in self.operators:
+                self.data = None
 
 
 
