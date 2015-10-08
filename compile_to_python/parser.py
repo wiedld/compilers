@@ -55,11 +55,9 @@ class CalculatorNode(AbstractParsedNode):
     def get_operators(cls):
         return tuple(cls.operators.keys())
 
-
     @classmethod
     def token_patterns(cls):
         regex_expns = [('^(\(*([0-9]*)(\%s)([0-9]*)\)*)' % op) for op in cls.operators.keys()]
-
         return tuple(regex_expns)
 
 

@@ -9,7 +9,7 @@ def tokenize(cls, string):
 
     tokens = []
     pos = 0
-    while string != "" and pos < 5:
+    while string != "":
         found = False
         for r in r_list:
             if r.search(string):
@@ -20,7 +20,6 @@ def tokenize(cls, string):
                 break       # break out of for loop
         if found == False:
             return "TokenError: invalid language syntax."
-        pos = pos + 1
 
     return tokens
 
