@@ -94,11 +94,9 @@ class CalculatorNode(AbstractParsedNode):
 
 
 
-
-
-    def bind(self):
-            if self.data in self.operators:
-                self.data = None
+    # def bind(self):
+    #         if self.data in self.operators:
+    #             self.data = None
 
 
 
