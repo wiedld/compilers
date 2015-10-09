@@ -36,8 +36,8 @@ def calculator():
         tokens = lex.lexical_analysis(raw, parser.CalculatorNode)
         print tokens
 
-        # root = CalculatorNode(tokens_list)
-        # parse(root)
+        parser.CalculatorNode.parse_tree(tokens)
+        print "DID NOT BREAK PYTHON....but still need to see if worked correctly"
 
 
 if __name__ == "__main__":
