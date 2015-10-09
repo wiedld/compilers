@@ -90,11 +90,13 @@ class CalculatorNode(AbstractParseNode):
 
         # if only num (subtree from num_op_num)
         if re.match('^(\(*([0-9]*)\)*)$', token):
-            self.data = re.search('([0-9]*)', token).group(0)
+            # print "line 94", token
+            self.data = re.search('(\d+)', token).group(0)
             return
 
         # if num_op_num
         if re.match('^(\(*([0-9]+)([\+\-\/\*\%\^\!\e]{1})([0-9]+)\)*)', token):
+            # print "line 100", token
             self.data = "result"
             self.left = CalculatorNode()
             num_op = re.search('^(\(*([0-9]+)([\+\-\/\*\%\^\!\e]{1}))', token).group(0)
@@ -105,8 +107,9 @@ class CalculatorNode(AbstractParseNode):
         # if num_op = left(num) + parent(op)
         # if op_num, still also do = left(num) + parent(op)
         else:
+            # print "line 111", token
             self.data = re.search('([\+\-\/\*\%\^\!\e]{1})', token).group(0)
-            num = re.search('([0-9]*)', token).group(0)    # greedy, match all the nums
+            num = re.search('(\d+)', token).group(0)    # greedy, match all the nums
             self.left = CalculatorNode(num)
 
         # continuing building parse tree to the right
