@@ -36,7 +36,12 @@ def calculator():
         tokens = lex.lexical_analysis(raw, parser.CalculatorNode)
         print tokens
 
-        parser.CalculatorNode.parse_tree(tokens)
+        parse_tree = parser.CalculatorNode.parse_into_tree(tokens)
+        parse_tree.print_parse_tree()
+
+        parse_tree.bind()
+        parse_tree.print_parse_tree()
+
         print "DID NOT BREAK PYTHON....but still need to see if worked correctly"
 
 

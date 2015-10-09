@@ -1,3 +1,4 @@
+from __future__ import print_function
 import utils
 import string
 import re
@@ -6,6 +7,7 @@ import re
 ascii_letters = string.ascii_letters
 
 
+###################################################
 ###################################################
 # Abstract class for python "compiled" languages
 
@@ -18,26 +20,57 @@ class AbstractParseNode(object):
         self.left = left
         self.right = right
 
+
     @classmethod
     def get_operators(cls):
         """return tuple (hashable type) containing operators"""
         return None
+
 
     @classmethod
     def token_patterns(cls):
         """return tuple containing valid regex expressions."""
         return None
 
+
     @classmethod
-    def parse_tree(cls, tokens_list):
+    def parse_into_tree(cls, tokens_list):
         """take list of tokens, and return root of parsed tree."""
         return None
 
+
+    def iterate_tree(self, funct):
+        """generalized function to iterate through tree, performing function on each node."""
+
+        if self.data == None:
+            return
+
+        funct(self)
+
+        if self.left:
+            self.left.iterate_tree(funct)
+        if self.right:
+            self.right.iterate_tree(funct)
+
+
+    def print_parse_tree(self):
+        """print data from each node. for debugging."""
+
+        funct = lambda x: print (x.data)
+        self.iterate_tree(funct)
+
+
     def bind(self):
         """bind the opcode function (python = opcode here) to the operator"""
-        return None
+
+        def bind_op_function(x):
+            if x.operators.get(x.data):
+                x.data = x.operators.get(x.data)
+
+        self.iterate_tree(bind_op_function)
 
 
+###################################################
 ###################################################
 # calculator language
 
@@ -72,12 +105,11 @@ class CalculatorNode(AbstractParseNode):
 
 
     @classmethod
-    def parse_tree(cls, tokens_list):
+    def parse_into_tree(cls, tokens_list):
         root = cls()
         root.recursive_parse(tokens_list)
 
-        # test is working
-        root.print_parse_tree()
+        return root
 
 
     def recursive_parse(self, tokens_list):
@@ -115,22 +147,4 @@ class CalculatorNode(AbstractParseNode):
         # continuing building parse tree to the right
         self.right = CalculatorNode()
         return self.right.recursive_parse(tokens_list[1:])
-
-
-    def print_parse_tree(self):
-        if self.data == None:
-            return
-
-        print "node.data = ", self.data
-
-        if self.left:
-            self.left.print_parse_tree()
-        if self.right:
-            self.right.print_parse_tree()
-
-
-
-    # def bind(self):
-    #         if self.data in self.operators:
-    #             self.data = None
 
