@@ -35,7 +35,7 @@ class AbstractParseNode(object):
 
     @classmethod
     def parse_into_tree(cls, tokens_list):
-        """take list of tokens, and return root of parsed tree."""
+        """take a token list and root, and creates parsed tree"""
         return None
 
 
@@ -113,6 +113,11 @@ class CalculatorNode(AbstractParseNode):
 
 
     def recursive_parse(self, tokens_list):
+        """grammer rules:
+                num_op
+                op_num
+                num_op_num -->  num ("result")
+        """
         # base case = if no more tokens
         if tokens_list == []:
             return

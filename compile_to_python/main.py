@@ -20,6 +20,11 @@
 # TODO:
 # - handle spaces in input.
 # "**": utils.power screws up regex
+
+# NEXT:
+# - read tree, and do computation/operations to return result
+# - should be in parser file. put helper functs in utils file?
+
 ###########################
 
 import lex
