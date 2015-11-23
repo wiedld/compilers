@@ -1,0 +1,41 @@
+COMPILERS
+
+1. frontend:
+    - Lexical analysis = Tokenize
+        1- recognize which substrings are the lexemes
+        2- classify substrings by their role (token class)
+        - token classes: identifiers, ints, strings, parans, keywords, whitespace
+        - approach: reading left-to-right, lookahead may be required, can use regex to recognize token classes
+    - Syntax analysis = Parsing
+        - regex parsers, LL(k), LR(k)
+        - output is not the tree per se (e.g. tree doesn't need to be built). Instead, is the tree traversal in your code.
+        - in-order (left child, parent (op), then right child)
+        - pre-order (parent, then children) = LL(k) = top-down = predictive
+        - post-order (children, then parent) = LR(k) = bottom-up = shift-reduce
+    - Semantic analysis = Binding
+        - (type checking, object binding, issuing warnings for invalid inputs)
+
+2. middle:
+    - Code optimisation:
+        - done in a language other than source or machine code
+        - once we have the semantic meaning assigned, we can re-translate to the syntax which runs more efficiently. (since many difference syntax can be written for the same sematic meaning)
+    - intermediatary layer, often used for generic optimization (shared with other compilers)
+
+3. backend:
+    - additional analysis
+    - transformations
+    - tends to be specific for that computer etc.
+    - generates the actual machine code to execute
+
+
+###########################
+###########################
+
+The front end is generally considered to be where syntactic and semantic processing takes place, along with translation to a lower level of representation (than source code).
+
+The middle end is usually designed to perform optimizations on a form other than the source code or machine code. This source code/machine code independence is intended to enable generic optimizations to be shared between versions of the compiler supporting different languages and target processors.
+
+The back end takes the output from the middle. It may perform more analysis, transformations and optimizations that are for a particular computer. Then, it generates code for a particular processor and OS.
+
+###########################
+###########################
