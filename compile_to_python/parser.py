@@ -13,7 +13,7 @@ ascii_letters = string.ascii_letters
 
 class AbstractParseNode(object):
     operators = {}  # key=operator, value=function_name
-    valid_ascii = []    # enter valid ascii alphanumeric
+    valid_types = []    # enter valid types
 
     def __init__(self, data=None, left=None, right=None):
         self.data = data
@@ -60,8 +60,13 @@ class AbstractParseNode(object):
         self.iterate_tree(funct)
 
 
-    def bind(self):
-        """bind the opcode function (python = opcode here) to the operator"""
+    def semantic_analysis(self):
+        """type checking/conversation, and binding of functions to operators"""
+
+        # def type_convert_func(x):
+        #     pass
+
+        # self.iterate_tree(type_convert_func)
 
         def bind_op_function(x):
             if x.operators.get(x.data):
@@ -85,6 +90,8 @@ class CalculatorNode(AbstractParseNode):
                  "e": utils.natural_exp,
                  # "**": utils.power
                  }
+    valid_types = [int, float]
+
 
     @classmethod
     def get_operators(cls):
@@ -113,7 +120,7 @@ class CalculatorNode(AbstractParseNode):
 
 
     def recursive_parse(self, tokens_list):
-        """grammer rules:
+        """grammar rules:
                 num_op
                 op_num
                 num_op_num -->  num ("result")

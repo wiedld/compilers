@@ -9,11 +9,12 @@
 # - parse:
 #     - recursive tree construction
 #     - parans() denotes root of subtree
-#     - nums are left/right children of operators
+#     - nums are left children of operators
 # - semantic analysis:
 #     - type checking/conversion
 #     - bind math operator symbols to functions
 #     - issue any warnings
+
 
 
 ###########################
@@ -24,10 +25,11 @@
 # NEXT:
 # - read tree, and do computation/operations to return result
 # - should be in parser file. put helper functs in utils file?
+# - handle no parans. 23 + 234 - 234
 
 ###########################
 
-import lex
+import lexer
 import parser
 
 
@@ -38,13 +40,13 @@ def calculator():
         if raw == "q":
             break
 
-        tokens = lex.lexical_analysis(raw, parser.CalculatorNode)
+        tokens = lexer.lexical_analysis(raw, parser.CalculatorNode)
         print tokens
 
         parse_tree = parser.CalculatorNode.parse_into_tree(tokens)
         parse_tree.print_parse_tree()
 
-        parse_tree.bind()
+        parse_tree.semantic_analysis()
         parse_tree.print_parse_tree()
 
         print "DID NOT BREAK PYTHON....but still need to see if worked correctly"
