@@ -2,8 +2,17 @@
 
 ops = {
     "+": (lambda a,b: a+b),
-    "-": (lambda a,b: a-b)
+    "-": (lambda a,b: a-b),
+    "*": (lambda a,b: a*b)
 }
+
+
+def num(s):
+    try:
+        return int(s)
+    except:
+        return None
+
 
 ########################################
 
@@ -38,44 +47,80 @@ print
 
 ########################################
 
-def LL2_eval(tokens):
+def LL1_eval(tokens):
     """LL(2), prefix.
         - Left-to-right through tokens.
         - Parsing is left derivation, (a pre-order traversal of a tree with op as parent nodes).
         - Rule assessment starts on the left side (therefore, must have lookahead).
         Done with prediction."""
 
-    stack = []
+    # # RULES
+    #     S -> op int int | op int E | op E E
+    #     E -> op E E | op int E | op E int
 
+    stack = []
     i = 0
-    while i < len(tokens):
+
+    while True:
         print "current stack:", stack
 
+        # exit
+        if i == len(tokens):
+            if len(stack) > 1:
+                tokens = stack
+                stack, i = [], 0
+                continue
+            elif len(stack) == 1 and num(stack[-1])!=None:
+                return stack.pop()
+            else:
+                return "Invalid input"
+
+
         curr = tokens[i]
+        # lookahead, predictive
+        ahead = tokens[i+1:i+2]
 
+        # E -> op E E
         if curr in ops:
-            # lookahead, predictive
-            ahead1, ahead2 = tokens[i+1:i+2], tokens[i+2:i+3]
+            stack.append(curr)
+            i += 1
+            continue
 
-            try:
-                ahead1, ahead2 = int(ahead1[0]), int(ahead2[0])
-                result = ops[curr](ahead1, ahead2)
-                stack.append(result)
-                i += 3
+        # E -> (op on stack) (int on stack) int
+        elif ahead == []:
+            stack.append(curr)
+            i += 1
+            continue
 
-            except:
-                ahead1 = int(ahead1[0])
-                prev = stack.pop()
-                result = ops[curr](prev, ahead1)
-                stack.append(result)
-                i += 2
+        # E -> (op on stack) int int
+        elif num(curr)!=None and num(ahead[0])!=None:
+            top = stack.pop()
+            result = ops[top](num(curr), num(ahead[0]))
+            stack.append(result)
+            i += 2
+            continue
 
-    return stack.pop()
+        # E -> (op on stack) int E
+        elif num(curr)!=None and ahead[0] in ops:
+            stack.append(curr)
+            i += 1
+            continue
+
+        # invalid
+        else:
+            return "Input is not valid"
 
 
-test2 = '+ 7 2 - 3'
+
+test1 = '+ 7 * 2 3 '        # 13
+test2 = '+ * 1 7 * 2 3 '    # 13
+test3 = '+ * 2 3 7'         # 13
 #   * + 1 2 3 == ( * ( + 2 ) 3 )
-print LL2_eval(test2.split())
+print LL1_eval(test1.split())
+print
+print LL1_eval(test2.split())
+print
+print LL1_eval(test3.split())
 
 ########################################
 
