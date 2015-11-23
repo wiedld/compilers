@@ -124,12 +124,3 @@ print LL1_eval(test3.split())
 
 ########################################
 
-# def LL_eval(tokens):
-#     """LL(k), prefix. Left-to-right, left derivation."""
-#     stack = []
-
-#     return
-
-# test2 = '+ 7 2 - 3'
-# #   * + 1 2 3 == ( * ( + 2 ) 3 )
-# print LL_eval(test2.split())
