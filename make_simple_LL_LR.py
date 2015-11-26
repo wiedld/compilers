@@ -1,9 +1,11 @@
 
+########################################
 
 ops = {
     "+": (lambda a,b: a+b),
     "-": (lambda a,b: a-b),
-    "*": (lambda a,b: a*b)
+    "*": (lambda a,b: a*b),
+    "/": (lambda a,b: a/b)
 }
 
 
@@ -13,8 +15,13 @@ def num(s):
     except:
         return None
 
-
 ########################################
+
+# S|E --> E E op
+# E --> int
+
+# therefore, determine each E and reduce to a term int, before moving forward
+
 
 def LR0_eval(tokens):
     """LR(0), postfix.
@@ -47,69 +54,71 @@ print
 
 ########################################
 
+#    S|E  ->  op E E
+#    E -> int
+
+
 def LL1_eval(tokens):
-    """LL(2), prefix.
+    """LL(1), prefix.
         - Left-to-right through tokens.
         - Parsing is left derivation, (a pre-order traversal of a tree with op as parent nodes).
         - Rule assessment starts on the left side (therefore, must have lookahead).
         Done with prediction."""
 
-    # # RULES
-    #     S -> op int int | op int E | op E E
-    #     E -> op E E | op int E | op E int
-
     stack = []
     i = 0
 
     while True:
-        print "current stack:", stack
+        print "stack:", stack
 
-        # exit
-        if i == len(tokens):
-            if len(stack) > 1:
-                tokens = stack
-                stack, i = [], 0
-                continue
-            elif len(stack) == 1 and num(stack[-1])!=None:
-                return stack.pop()
-            else:
-                return "Invalid input"
+        curr = tokens[i:i+1]    # avoid indexing error
 
+        if curr == []:
+            break
 
-        curr = tokens[i]
-        # lookahead, predictive
-        ahead = tokens[i+1:i+2]
-
-        # E -> op E E
-        if curr in ops:
-            stack.append(curr)
+        if curr[0] in ops:
+            stack.append(curr[0])
             i += 1
             continue
 
-        # E -> (op on stack) (int on stack) int
-        elif ahead == []:
-            stack.append(curr)
+        if num(curr[0]):
+            # if curr==int, stack[-2:0] == [op,int]
+            if num(stack[-1]):
+                try:
+                    top = stack.pop()
+                    op = stack.pop()
+                    result = ops[op](num(top), num(curr[0]))
+                    stack.append(result)
+                    i += 1
+                    continue
+                except:
+                    raise TypeError
+
+            # lookahead
+            ahead = tokens[i+1:i+2]
+            # if curr==int and ahead==int, then top stack must == op
+            if num(ahead[0]):
+                try:
+                    top = stack.pop()
+                    result = ops[top](num(curr[0]), num(ahead[0]))
+                    stack.append(result)
+                    i += 2
+                    continue
+                except:
+                    raise TypeError
+
+            # ahead != int, move forward
+            stack.append(curr[0])
             i += 1
             continue
 
-        # E -> (op on stack) int int
-        elif num(curr)!=None and num(ahead[0])!=None:
-            top = stack.pop()
-            result = ops[top](num(curr), num(ahead[0]))
-            stack.append(result)
-            i += 2
-            continue
+        return TypeError  # curr != (num | op)
 
-        # E -> (op on stack) int E
-        elif num(curr)!=None and ahead[0] in ops:
-            stack.append(curr)
-            i += 1
-            continue
+    if len(stack) > 1:
+        print "HIT HERE:", stack
+        stack = [LL1_eval(stack)]
 
-        # invalid
-        else:
-            return "Input is not valid"
-
+    return stack.pop()
 
 
 test1 = '+ 7 * 2 3 '        # 13

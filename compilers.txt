@@ -30,12 +30,14 @@ COMPILERS
 
 ###########################
 ###########################
+LL(k):
+    - onto stack if:
+        - non-term, not yet expanded
+        - term, not yet matched
+        - top = leftmost pending term or non-term
+    - reject with error state
+    - accept on end of input w/ empty stack
 
-The front end is generally considered to be where syntactic and semantic processing takes place, along with translation to a lower level of representation (than source code).
-
-The middle end is usually designed to perform optimizations on a form other than the source code or machine code. This source code/machine code independence is intended to enable generic optimizations to be shared between versions of the compiler supporting different languages and target processors.
-
-The back end takes the output from the middle. It may perform more analysis, transformations and optimizations that are for a particular computer. Then, it generates code for a particular processor and OS.
 
 ###########################
 ###########################
