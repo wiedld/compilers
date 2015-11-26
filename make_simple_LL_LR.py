@@ -69,27 +69,40 @@ def LL1_eval(tokens):
     i = 0
 
     while True:
-        print "stack:", stack
+        # print "stack:", stack
+        # print "remaining tokens:", tokens[i:]
+
+        if stack == [] and len(tokens[i:]) == 1:
+            try:
+                stack.append(num(tokens[i]))
+                break
+            except:
+                raise TypeError
 
         curr = tokens[i:i+1]    # avoid indexing error
 
         if curr == []:
+            print "line 77"
             break
 
         if curr[0] in ops:
+            print "line 81"
             stack.append(curr[0])
             i += 1
             continue
 
         if num(curr[0]):
+            print "line 87"
             # if curr==int, stack[-2:0] == [op,int]
             if num(stack[-1]):
+                print "line 90"
                 try:
                     top = stack.pop()
                     op = stack.pop()
                     result = ops[op](num(top), num(curr[0]))
-                    stack.append(result)
-                    i += 1
+                    # stack.append(result)
+                    tokens[i] = result
+                    # i += 1
                     continue
                 except:
                     raise TypeError
@@ -98,32 +111,32 @@ def LL1_eval(tokens):
             ahead = tokens[i+1:i+2]
             # if curr==int and ahead==int, then top stack must == op
             if num(ahead[0]):
+                print "line 105"
                 try:
                     top = stack.pop()
                     result = ops[top](num(curr[0]), num(ahead[0]))
-                    stack.append(result)
-                    i += 2
+                    # stack.append(result)
+                    i += 1
+                    tokens[i] = result
                     continue
                 except:
                     raise TypeError
 
             # ahead != int, move forward
+            print "line 116"
             stack.append(curr[0])
             i += 1
             continue
 
         return TypeError  # curr != (num | op)
 
-    if len(stack) > 1:
-        print "HIT HERE:", stack
-        stack = [LL1_eval(stack)]
-
     return stack.pop()
 
 
-test1 = '+ 7 * 2 3 '        # 13
-test2 = '+ * 1 7 * 2 3 '    # 13
-test3 = '+ * 2 3 7'         # 13
+test1 = '- + 7 * 2 3 26'        # 13
+test2 = '- + * 1 7 * 2 3 26'    # 13
+test3 = '- + * 2 3 7 26'         # 13
+
 #   * + 1 2 3 == ( * ( + 2 ) 3 )
 print LL1_eval(test1.split())
 print
