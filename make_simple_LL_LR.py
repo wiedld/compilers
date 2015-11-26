@@ -63,15 +63,13 @@ def LL1_eval(tokens):
         - Left-to-right through tokens.
         - Parsing is left derivation, (a pre-order traversal of a tree with op as parent nodes).
         - Rule assessment starts on the left side (therefore, must have lookahead).
-        Done with prediction."""
+        Done with prediction. If statements expecting certain tokens."""
 
     stack = []
     i = 0
 
     while True:
-        # print "stack:", stack
-        # print "remaining tokens:", tokens[i:]
-
+        # only 1 item in input stream. should==int
         if stack == [] and len(tokens[i:]) == 1:
             try:
                 stack.append(num(tokens[i]))
@@ -81,21 +79,18 @@ def LL1_eval(tokens):
 
         curr = tokens[i:i+1]    # avoid indexing error
 
+        # finished input stream
         if curr == []:
-            print "line 77"
             break
 
         if curr[0] in ops:
-            print "line 81"
             stack.append(curr[0])
             i += 1
             continue
 
         if num(curr[0]):
-            print "line 87"
             # if curr==int, stack[-2:0] == [op,int]
             if num(stack[-1]):
-                print "line 90"
                 try:
                     top = stack.pop()
                     op = stack.pop()
@@ -111,7 +106,6 @@ def LL1_eval(tokens):
             ahead = tokens[i+1:i+2]
             # if curr==int and ahead==int, then top stack must == op
             if num(ahead[0]):
-                print "line 105"
                 try:
                     top = stack.pop()
                     result = ops[top](num(curr[0]), num(ahead[0]))
@@ -123,7 +117,6 @@ def LL1_eval(tokens):
                     raise TypeError
 
             # ahead != int, move forward
-            print "line 116"
             stack.append(curr[0])
             i += 1
             continue
@@ -133,9 +126,10 @@ def LL1_eval(tokens):
     return stack.pop()
 
 
-test1 = '- + 7 * 2 3 26'        # 13
-test2 = '- + * 1 7 * 2 3 26'    # 13
-test3 = '- + * 2 3 7 26'         # 13
+test1 = '- + 7 * 2 3 26'        # -13
+test2 = '- + * 1 7 * 2 3 26'    # -13
+test3 = '- + * 2 3 7 26'         # -13
+
 
 #   * + 1 2 3 == ( * ( + 2 ) 3 )
 print LL1_eval(test1.split())
