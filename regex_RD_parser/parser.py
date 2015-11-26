@@ -1,5 +1,4 @@
 from __future__ import print_function
-import utils
 import string
 import re
 
@@ -80,16 +79,14 @@ class AbstractParseNode(object):
 # calculator language
 
 class CalculatorNode(AbstractParseNode):
-    operators = {"+": utils.add,
-                 "-": utils.subtract,
-                 "/": utils.division,
-                 "*": utils.multiply,
-                 "%": utils.mod,
-                 "^": utils.power,
-                 "!": utils.factorial,
-                 "e": utils.natural_exp,
-                 # "**": utils.power
-                 }
+    operators = {"+": (lambda a,b: a+b),
+                    "-": (lambda a,b: a-b),
+                    "*": (lambda a,b: a*b),
+                    "/": (lambda a,b: a/b),
+                    "%": (lambda a,b: a%b),
+                    "^": (lambda a,b: a**b),
+                    "!": (lambda a: reduce(lambda x,y:x*y,[1]+range(1,n+1)))
+                }
     valid_types = [int, float]
 
 

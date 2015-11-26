@@ -1,7 +1,7 @@
 import re
 
 
-def tokenize(cls, string):
+def tokenize(cls, string, skip_whitespace=True):
     """Take in string and language class, returns list of tokens."""
 
     valid_patterns = cls.token_patterns()
@@ -11,6 +11,7 @@ def tokenize(cls, string):
     pos = 0
 
     while string != "":
+
         found = False
 
         # identify the token
