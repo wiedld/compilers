@@ -10,7 +10,7 @@ ascii_letters = string.ascii_letters
 ###################################################
 # Abstract class for python "compiled" languages
 
-class AbstractParseNode(object):
+class AbstractParser(object):
     operators = {}  # key=operator, value=function_name
     valid_types = []    # enter valid types
 
@@ -78,14 +78,14 @@ class AbstractParseNode(object):
 ###################################################
 # calculator language
 
-class CalculatorNode(AbstractParseNode):
+class CalculatorParser(AbstractParser):
     operators = {"+": (lambda a,b: a+b),
                     "-": (lambda a,b: a-b),
                     "*": (lambda a,b: a*b),
                     "/": (lambda a,b: a/b),
                     "%": (lambda a,b: a%b),
-                    "^": (lambda a,b: a**b),
-                    "!": (lambda a: reduce(lambda x,y:x*y,[1]+range(1,n+1)))
+                    "^": (lambda a,b: a**b)
+                    # "!": (lambda a: reduce(lambda x,y:x*y,[1]+range(1,n+1)))
                 }
     valid_types = [int, float]
 
@@ -96,14 +96,11 @@ class CalculatorNode(AbstractParseNode):
 
     @classmethod
     def token_patterns(cls):
-        # 3+5 and (3+5)
-        num_op_num = [('^(\(*([0-9]+)(\%s)([0-9]+)\)*)' % op) for op in cls.operators.keys()]
-        # 3+  and (3+(  and  (3+   and  3+(
-            # since the num_op_num is added first, will be checked as matches first
-        num_op = [('^(\(*([0-9]+)(\%s)\(*)' % op) for op in cls.operators.keys()]
-        # +5  and )+5)  and )+5    and +5)
-        op_num = [('^(\)*(\%s)([0-9]+)\)*)' % op) for op in cls.operators.keys()]
-        regex_expns = num_op_num + num_op + op_num
+        tok_open = ['^\(']
+        tok_close = ['^\)']
+        tok_num = ['^(\d+)']
+        tok_op = [('^(\%s)' % op) for op in cls.operators.keys()]
+        regex_expns = tok_open + tok_close + tok_num + tok_op
 
         return tuple(regex_expns)
 
@@ -119,8 +116,8 @@ class CalculatorNode(AbstractParseNode):
     def recursive_parse(self, tokens_list):
         """grammar rules:
                 num_op
-                op_num
-                num_op_num -->  num ("result")
+                tok_op_num
+                tok_num_op_num -->  num ("result")
         """
         # base case = if no more tokens
         if tokens_list == []:
@@ -129,31 +126,33 @@ class CalculatorNode(AbstractParseNode):
         # for each token, make operator=parent and left/right children
         token = tokens_list[0]
 
-        # if only num (subtree from num_op_num)
-        if re.match('^(\(*([0-9]*)\)*)$', token):
+
+
+        # if only num (subtree from tok_num_op_num)
+        if re.match('^(\(*(\d*)\)*)$', token):
             # print "line 94", token
             self.data = re.search('(\d+)', token).group(0)
             return
 
-        # if num_op_num
-        if re.match('^(\(*([0-9]+)([\+\-\/\*\%\^\!\e]{1})([0-9]+)\)*)', token):
+        # if tok_num_op_num
+        if re.match('^(\(*(\d+)([\+\-\/\*\%\^\!\e]{1})(\d+)\)*)', token):
             # print "line 100", token
             self.data = "result"
-            self.left = CalculatorNode()
-            num_op = re.search('^(\(*([0-9]+)([\+\-\/\*\%\^\!\e]{1}))', token).group(0)
-            num = token[len(num_op):].replace(")", "")
-            # make subtree to use num_op_num, with token_list = [num_op, num]
-            self.left.recursive_parse([num_op, num])
+            self.left = CalculatorParser()
+            tok_num_op = re.search('^(\(*(\d+)([\+\-\/\*\%\^\!\e]{1}))', token).group(0)
+            num = token[len(tok_num_op):].replace(")", "")
+            # make subtree to use tok_num_op_num, with token_list = [num_op, num]
+            self.left.recursive_parse([tok_num_op, num])
 
-        # if num_op = left(num) + parent(op)
-        # if op_num, still also do = left(num) + parent(op)
+        # if tok_num_op = left(num) + parent(op)
+        # if tok_op_num, still also do = left(num) + parent(op)
         else:
             # print "line 111", token
             self.data = re.search('([\+\-\/\*\%\^\!\e]{1})', token).group(0)
             num = re.search('(\d+)', token).group(0)    # greedy, match all the nums
-            self.left = CalculatorNode(num)
+            self.left = CalculatorParser(num)
 
         # continuing building parse tree to the right
-        self.right = CalculatorNode()
+        self.right = CalculatorParser()
         return self.right.recursive_parse(tokens_list[1:])
 

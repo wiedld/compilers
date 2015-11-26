@@ -20,7 +20,6 @@
 ###########################
 # TODO:
 # - handle spaces in input.
-# "**": utils.power screws up regex
 
 # NEXT:
 # - read tree, and do computation/operations to return result
@@ -40,14 +39,14 @@ def calculator():
         if raw == "q":
             break
 
-        tokens = lexer.lexical_analysis(raw, parser.CalculatorNode)
-        print tokens
+        tokens = lexer.lexical_analysis(raw, parser.CalculatorParser)
+        print "TOKENS:", tokens
 
-        parse_tree = parser.CalculatorNode.parse_into_tree(tokens)
-        parse_tree.print_parse_tree()
+        # parse_tree = parser.CalculatorParser.parse_into_tree(tokens)
+        # parse_tree.print_parse_tree()
 
-        parse_tree.semantic_analysis()
-        parse_tree.print_parse_tree()
+        # parse_tree.semantic_analysis()
+        # parse_tree.print_parse_tree()
 
         print "DID NOT BREAK PYTHON....but still need to see if worked correctly"
 
