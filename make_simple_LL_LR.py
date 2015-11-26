@@ -33,7 +33,6 @@ def LR0_eval(tokens):
     stack = []
 
     for t in tokens:
-        print "current stack:", stack
         if t in ops:
             arg2 = stack.pop()
             arg1 = stack.pop()
@@ -130,12 +129,8 @@ test1 = '- + 7 * 2 3 26'        # -13
 test2 = '- + * 1 7 * 2 3 26'    # -13
 test3 = '- + * 2 3 7 26'         # -13
 
-
-#   * + 1 2 3 == ( * ( + 2 ) 3 )
 print LL1_eval(test1.split())
-print
 print LL1_eval(test2.split())
-print
 print LL1_eval(test3.split())
 
 ########################################
