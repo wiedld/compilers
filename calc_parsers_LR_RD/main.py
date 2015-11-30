@@ -27,8 +27,14 @@ def calculator():
         if raw == "q":
             break
 
-        # print CalcParserLR.parse(raw)
-        print CalcParserRD.parse(raw)
+        # POSTFIX
+        print CalcParserLR.parse(raw)
+
+        # # PREFIX
+        # print CalcParserLL.parse(raw)
+
+        # INFIX
+        # print CalcParserRD.parse(raw)
 
 
 if __name__ == "__main__":

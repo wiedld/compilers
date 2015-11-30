@@ -1,5 +1,24 @@
 COMPILERS
 
+Lessons Learned:
+- grammar lends itself to certain parsing approaches
+- LR:
+    - right most derivation. uses symbol on right for production rule
+    - is all about the stack, or righthand recursion
+    - good for postfix
+    - to handle parans, needed to match/backtrack
+- LL:
+    - left most derivation. uses the symbol on left for production rule.
+    - is all about the lookaheads, or lefthand recursions
+    - best at prefix.
+    - to handle nesting or parans, needed to use stack or recursion to store in memory.
+- RD:
+    - also requires a lookahead
+    - not clear on how RD is different then LL(k) -- other than I used a recursive call with each rule decision, rather than the stack
+
+###########################
+###########################
+
 1. frontend:
     - Lexical analysis = Tokenize
         1- recognize which substrings are the lexemes
@@ -7,11 +26,11 @@ COMPILERS
         - token classes: identifiers, ints, strings, parans, keywords, whitespace
         - approach: reading left-to-right, lookahead may be required, can use regex to recognize token classes
     - Syntax analysis = Parsing
-        - regex parsers, LL(k), LR(k)
+        - RD parsers, LL(k), LR(k)
         - output is not the tree per se (e.g. tree doesn't need to be built). Instead, is the tree traversal in your code.
-        - in-order (left child, parent (op), then right child)
-        - pre-order (parent, then children) = LL(k) = top-down = predictive
-        - post-order (children, then parent) = LR(k) = bottom-up = shift-reduce
+        - in-order (left child, parent (op), then right child) = RD = recursion left & right
+        - pre-order (parent, then children) = LL(k) = top-down = predictive = recurse left
+        - post-order (children, then parent) = LR(k) = bottom-up = shift-reduce = recurse right
     - Semantic analysis = Binding
         - (type checking, object binding, issuing warnings for invalid inputs)
 
@@ -26,17 +45,6 @@ COMPILERS
     - transformations
     - tends to be specific for that computer etc.
     - generates the actual machine code to execute
-
-
-###########################
-###########################
-LL(k):
-    - onto stack if:
-        - non-term, not yet expanded
-        - term, not yet matched
-        - top = leftmost pending term or non-term
-    - reject with error state
-    - accept on end of input w/ empty stack
 
 
 ###########################

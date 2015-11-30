@@ -8,7 +8,9 @@ import re
 ###################################################
 
 class CalcParserLR(abstractParsers.CalculatorParser):
-    """Handles infix notation.
+    """Handles postfix notation.
+    Rule applied once the righthand op is read
+        (right derivation, right hand recursive call).
     Precedence determined by parans.
     Utilizes a stack."""
 
@@ -29,7 +31,6 @@ class CalcParserLR(abstractParsers.CalculatorParser):
 
 
     def _LR_parse(self, i=0):
-        print "STACK IS:", self.stack
 
         if len(self.tokens) <= i:
             return self.stack.pop()
@@ -45,11 +46,14 @@ class CalcParserLR(abstractParsers.CalculatorParser):
             return self._LR_parse(i+1)
 
         elif self._num(tok):
-            self.tok_num(tok)
+            self.stack.append(self._num(tok))
             return self._LR_parse(i+1)
 
         elif tok in self.operators.keys():
-            self.stack.append(tok)
+            term2 = self.stack.pop()
+            term1 = self.stack.pop()
+            result = self.operators[tok](term1, term2)
+            self.stack.append(result)
             return self._LR_parse(i+1)
 
         else:
@@ -76,34 +80,13 @@ class CalcParserLR(abstractParsers.CalculatorParser):
             raise SyntaxError("Incorrect syntax preceeding tok_close.")
 
 
-    def tok_num(self, tok):
-        # case #1: stack=[int op], tok=int
-        # case #2: stack= [] | ["("]
-        if self.stack == []:
-            self.stack.append(tok)
-            return
-
-        elif self.stack[-1] == "(":
-            self.stack.append(tok)
-            return
-
-        else:
-            try:
-                op = self.stack.pop()
-                term = self.stack.pop()
-                result = self.operators[op](self._num(term), self._num(tok))
-                self.stack.append(result)
-                return
-            except:
-                raise SyntaxError("Terminal breaks production rules.")
-
-
 ###################################################
 ###################################################
 
 
 class CalcParserRD(abstractParsers.CalculatorParser):
     """Handles infix notation.
+    Rule checking, results in recursive call on the left side as well as right.
     Precedence determined by parans.
     Requires 1 lookahead = LL(1).
     No stack. Utilizes recursion and a single passed state variable."""
@@ -161,7 +144,8 @@ class CalcParserRD(abstractParsers.CalculatorParser):
                 return self._num(tok)
 
 
-
+###################################################
+###################################################
 
 
 
