@@ -17,7 +17,7 @@
 
 ###########################
 
-from parsers import CalcParserLR, CalcParserRD
+from parsers import CalcParserLR, CalcParserLL, CalcParserRD
 
 
 def calculator():
@@ -28,10 +28,10 @@ def calculator():
             break
 
         # POSTFIX
-        print CalcParserLR.parse(raw)
+        # print CalcParserLR.parse(raw)
 
         # # PREFIX
-        # print CalcParserLL.parse(raw)
+        print CalcParserLL.parse(raw)
 
         # INFIX
         # print CalcParserRD.parse(raw)
