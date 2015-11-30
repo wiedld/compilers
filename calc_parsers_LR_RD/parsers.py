@@ -166,12 +166,12 @@ class CalcParserLL(abstractParsers.CalculatorParser):
     """Handles prefix notation.
     Rule applied once the lefthand op is read
         (left derivation, left hand recursive call).
-    Precedence determined by parans. count parans up/down.
+    ** DIDN'T DO precedence with parans. a pain with LL. **
     Utilizes lookahead k=2."""
 
-
-    def __init__(self):
-        self.count_parans = 0
+    # TODO: bother with parans? makes more sense to proceed with LR or RD
+    # def __init__(self):
+        # self.count_parans = 0
 
 
     @classmethod
@@ -186,63 +186,56 @@ class CalcParserLL(abstractParsers.CalculatorParser):
 
 
     def _LL_parse(self, i=0):
-        print
 
         tok = self.tokens[i]
 
         if len(self.tokens) <= i:
-            return tok, i
-
-        print "TOK:", tok
+            if self.count_parans == 0:
+                return tok, i
+            else:
+                return SyntaxError("Unbalanced parans")
 
         # if tok == ")":
         #     self._tok_close()
-        #     self.i += 1
-        #     return left_term
+        #     i += 1
+        #     tok = self.tokens[i]
 
         # elif tok == "(":
         #     self.count_parans += 1
-        #     self.i += 1
-        #     return self._LL_parse()
+        #     i += 1
+        #     tok = self.tokens[i]
 
         if tok in self.operators.keys():
-            print "line 208"
-            # k=2
+
             try:
+                # k=2
                 ahead1 = self.tokens[i+1]
                 ahead2 = self.tokens[i+2]
-                print "ahead1", ahead1, "ahead2", ahead2
 
                 # op num num
                 if self._num(ahead1) and self._num(ahead2):
-                    print "line 216"
-                    print "tok", tok, "ahead1", ahead1, "ahead2", ahead2
                     result = self.operators[tok](self._num(ahead1), self._num(ahead2))
-                    print "result", result
-                    print "new i", i + 2
                     return result, i+2
+
                 # op E ?
                 elif ahead1 in self.operators.keys():
-                    print "line 220"
                     # expand left derivation
                     ahead1, i = self._LL_parse(i+1)
-                    print "ahead1 redefined", ahead1
+                    # redo the lookahead
                     ahead2 = self.tokens[i+1]
-                    print "ahead2 rededined", ahead2
+
                     # op E int
                     if self._num(ahead2):
-                        print "line 226"
-                        print "new i", i + 1
                         return self.operators[tok](ahead1, self._num(ahead2)), i+1
+
                     # op E E
                     elif ahead2 in self.operators.keys():
-                        print "line 230"
                         ahead2, i = self._LL_parse(i+1)
                         return self.operators[tok](ahead1, ahead2), i
 
                 # op int E
                 elif ahead2 in self.operators.keys():
-                    print "line 244"
+                    # still leftmost derivation of what can be expanded
                     ahead2, i = self._LL_parse(i+2)
                     return self.operators[tok](self._num(ahead1), ahead2), i
 
@@ -252,11 +245,12 @@ class CalcParserLL(abstractParsers.CalculatorParser):
         return SyntaxError("Expected operator.")
 
 
-    def _tok_close(self):
-        # confirm tok_close is matched
-        if self.count_parans%2 != 0:
-            self.count -= 1
-        else:
-            return SyntaxError("Unmatched tok_close.")
+    # def _tok_close(self):
+    #     # confirm tok_close is matched
+    #     # count_parans should be odd
+    #     if self.count_parans%2 != 0 and self.count_parans > 0:
+    #         self.count -= 1
+    #     else:
+    #         raise SyntaxError("Unmatched tok_close.")
 
 
