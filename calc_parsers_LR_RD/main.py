@@ -17,7 +17,7 @@
 
 ###########################
 
-from parsers import CalcParserLR
+from parsers import CalcParserLR, CalcParserRD
 
 
 def calculator():
@@ -27,7 +27,8 @@ def calculator():
         if raw == "q":
             break
 
-        print CalcParserLR.parse(raw)
+        # print CalcParserLR.parse(raw)
+        print CalcParserRD.parse(raw)
 
 
 if __name__ == "__main__":

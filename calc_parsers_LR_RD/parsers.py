@@ -8,6 +8,10 @@ import re
 ###################################################
 
 class CalcParserLR(abstractParsers.CalculatorParser):
+    """Handles infix notation.
+    Precedence determined by parans.
+    Utilizes a stack."""
+
 
     def __init__(self):
         self.stack = []
@@ -54,7 +58,7 @@ class CalcParserLR(abstractParsers.CalculatorParser):
 
     def tok_close(self, i):
         # (int op int) --> but the int op int will already be reduced.
-        # stack = [(,int]
+        # stack = ["(",int]
             # --> remove the open_tok, and place int at front of tokens
             # so any expr prior to open_tok will now be eval
         try:
@@ -98,42 +102,64 @@ class CalcParserLR(abstractParsers.CalculatorParser):
 ###################################################
 
 
-# class CalcParser_RD(CalculatorParser):
-
-#     @classmethod
-#     def parse(cls, tokens_list):
-#         parser = cls()
-
-#         return parser._RD_parse(tokens_list)
+class CalcParserRD(abstractParsers.CalculatorParser):
+    """Handles infix notation.
+    Precedence determined by parans.
+    Requires 1 lookahead = LL(1).
+    No stack. Utilizes recursion and a single passed state variable."""
 
 
-#     def _RD_parse(self, tokens, ops=self.operators.keys()):
-#         """grammar rules:
-#             (E) --> E
-#             E --> E op E
-#             E --> int
-#         """
+    def __init__(self):
+        self.i = 0
 
-#         if tokens == []:
-#             return
 
-#         tok = tokens[0]
+    @classmethod
+    def parse(cls, input_string):
+        lexer = lexers.Lexer()
+        tokens = lexer.tokenize(cls, input_string)
+        print "TOKENS:", tokens
 
-#         # "(" tok_open
-#         if tok == "(":
-#             return self._RD_parse(tokens[1:])
+        parser = cls()
+        parser.tokens = tokens
+        return parser._RD_parse()
 
-#         # E --> int
-#         if len(tokens) == 1 and num(tokens[0]):
-#             return tokens[0]
 
-#         # int op  (E)|E|int
-#         if num(tokens[0]) and tokens[1] in ops:
-#             lam_func = self.operators[tokens[1]
-#             return lam_func(num(tokens[0], self._RD_parse(tokens[2:])
+    def _RD_parse(self, left_term=None):
+        # base case: finished all tokens
+        if len(self.tokens) <= self.i:
+            return left_term
 
-#         #
-#         if
+        tok = self.tokens[self.i]
+
+        # base case: closing paran:
+        if tok == ")":
+            self.i += 1
+            return left_term
+
+        # start recursive descent
+        if tok == "(":
+            self.i += 1
+            return self._RD_parse(left_term)
+
+        elif tok in self.operators.keys():
+            try:
+                self.i += 1
+                numb = self._RD_parse(left_term)
+                left_term = self.operators[tok](left_term, numb)
+                return left_term
+            except:
+                return SyntaxError
+
+        elif self._num(tok):
+            ahead = self.tokens[self.i+1:self.i+2]
+            if ahead != [] and ahead[0] in self.operators.keys():
+                # recursive call with left_term as current tok
+                self.i += 1
+                left_term = self._RD_parse(self._num(tok))
+                return left_term
+            else:
+                return self._num(tok)
+
 
 
 
